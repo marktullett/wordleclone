@@ -37,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('input[type="text"]');
     const inputFields = document.querySelectorAll('input[type="text"]');
     inputFields.forEach((input, index) => {
+        input.setAttribute('autocomplete', 'off');
         input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
             // Move to next field if a letter is entered
             const nextInput = inputFields[index + 1];
             if (nextInput && e.target.value) {
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let inputid = `input-${currentRow}-${col}`;
             let inputElement = document.getElementById(inputid);
             if (inputElement) {
+                inputElement.setAttribute('readonly', 'true');
                 inputElement.classList.remove("animate-pulse");
                 inputElement.classList.add("animate-none");
             }
@@ -170,6 +173,9 @@ document.getElementById("restartButton").addEventListener("click", function() {
 function initializeAlphabetDisplay() {
     const keyboardContainer = document.getElementById('keyboard');
 
+    // Ensure the keyboard container has a maximum width and is centered
+    keyboardContainer.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'max-w-full', 'overflow-hidden', 'mx-auto'); // Ensures the keyboard stays inside its container
+
     // Define the rows of the keyboard layout
     const rows = [
         ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -180,13 +186,13 @@ function initializeAlphabetDisplay() {
     // Iterate over each row
     rows.forEach(row => {
         const rowElement = document.createElement('div');
-        rowElement.classList.add('flex', 'justify-center', 'mb-2'); // Adjust margin-bottom to space rows
+        rowElement.classList.add('flex', 'justify-center', 'mb-2', 'w-full', 'max-w-full', 'overflow-hidden'); // Ensures each row is contained within the max width
 
         // Iterate over each key in the row
         row.forEach(key => {
             const keyElement = document.createElement('div');
             keyElement.setAttribute('id', `key-${key}`); // Set id for each key
-            keyElement.classList.add('flex', 'justify-center', 'items-center', 'w-8', 'h-8', 'bg-gray-500', 'text-white', 'rounded', 'mr-2'); // Adjust margin-right to space keys
+            keyElement.classList.add('flex', 'justify-center', 'items-center', 'w-8', 'h-8', 'bg-gray-500', 'text-white', 'rounded', 'mr-2', 'shrink-0'); // Prevents the keys from shrinking
             keyElement.textContent = key.toUpperCase();
             rowElement.appendChild(keyElement);
         });
@@ -195,17 +201,26 @@ function initializeAlphabetDisplay() {
     });
 }
 
-function updateLetterColor(letter, testResult) {
-    const letterBox = document.getElementById(`letter-${letter.toLowerCase()}`);
 
-    if (testResult === "Green") {
-        letterBox.className = 'flex justify-center items-center w-8 h-8 bg-green-500 text-white rounded';
-    } else if (testResult === "Yellow") {
-        letterBox.className = 'flex justify-center items-center w-8 h-8 bg-yellow-500 text-white rounded';
-    } else if (testResult === "Red") {
-        letterBox.className = 'flex justify-center items-center w-8 h-8 bg-red-500 text-white rounded';
-    } // No need for an else case if only updating on guesses
+function updateLetterColor(letter, testResult) {
+    const letterBox = document.getElementById(`key-${letter.toLowerCase()}`); // Corrected ID format
+
+    if (letterBox) {
+        if (testResult === "Green") {
+            letterBox.classList.remove('bg-gray-500');
+            letterBox.classList.add('bg-green-500');
+        } else if (testResult === "Yellow") {
+            letterBox.classList.remove('bg-gray-500');
+            letterBox.classList.add('bg-yellow-500');
+        } else if (testResult === "Red") {
+            letterBox.classList.remove('bg-gray-500');
+            letterBox.classList.add('bg-red-500');
+        }
+    } else {
+        console.error(`Element with ID key-${letter.toLowerCase()} not found.`);
+    }
 }
+
 
 
 
